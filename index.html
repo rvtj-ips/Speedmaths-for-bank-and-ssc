@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Speed Maths Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f8ef7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="SpeedMaths">
+    <style>
+        :root {
+            --bg:#060810; --surface:#0d1117; --surface2:#161b26; --surface3:#1e2535;
+            --border:rgba(255,255,255,0.07); --border-bright:rgba(255,255,255,0.14);
+            --text:#e8edf5; --muted:#6b7a99;
+            --correct:#10d97e; --wrong:#ff4d6a; --gold:#f5c842; --blue:#4f8ef7; --purple:#a066ff;
+            --c1:#4f8ef7;--c2:#a066ff;--c3:#e056ef;--c4:#ff4d6a;--c5:#ff7a2f;
+            --c6:#f5c842;--c7:#7ddb3a;--c8:#1adcb8;--c9:#22d4f5;--c10:#4f8ef7;--c11:#6470ff;
+            --radius:16px; --radius-sm:10px;
+        }
+        *{box-sizing:border-box;margin:0;padding:0;}
+        body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Helvetica Neue',Arial,sans-serif;line-height:1.5;min-height:100vh;overflow-x:hidden;}
+        body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(79,142,247,0.06),transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(160,102,255,0.05),transparent 60%);pointer-events:none;z-index:0;}
+        .container{max-width:500px;margin:0 auto;padding:24px 20px 48px;position:relative;z-index:1;}
+        .hidden{display:none!important;}
+
+        /* Typography */
+        h1{font-size:2rem;font-weight:900;text-align:center;letter-spacing:-0.5px;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;}
+        h2{font-size:1.4rem;font-weight:700;text-align:center;margin-bottom:6px;}
+        .subtitle{text-align:center;color:var(--muted);font-size:0.85rem;margin-bottom:20px;}
+        .sec-title{font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+        .mode-label{font-size:0.72rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+
+        /* Cards */
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px;position:relative;overflow:hidden;}
+        .card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.07),transparent);}
+
+        /* Buttons */
+        button{font-family:inherit;background:var(--surface2);color:var(--text);border:1px solid var(--border-bright);border-radius:var(--radius-sm);padding:12px 16px;font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.18s ease;width:100%;}
+        button:hover{background:var(--surface3);border-color:rgba(255,255,255,0.24);transform:translateY(-1px);}
+        button:active{transform:scale(0.97);}
+        button.primary{background:linear-gradient(135deg,var(--blue),var(--purple));border:none;font-weight:700;color:#fff;box-shadow:0 4px 20px rgba(79,142,247,0.28);}
+        button.primary:hover{box-shadow:0 6px 28px rgba(79,142,247,0.42);}
+        button.danger{background:rgba(255,77,106,0.12);border-color:rgba(255,77,106,0.28);color:var(--wrong);}
+        button.danger:hover{background:rgba(255,77,106,0.2);}
+        button.success-btn{background:rgba(16,217,126,0.1);border-color:rgba(16,217,126,0.25);color:var(--correct);}
+        button.back-btn{background:none;border:none;color:var(--muted);font-size:0.85rem;width:auto;padding:8px 0;display:flex;align-items:center;gap:5px;margin-bottom:12px;}
+        button.back-btn:hover{color:var(--text);background:none;border:none;transform:none;}
+        button.chip{width:auto;padding:7px 14px;font-size:0.82rem;border-radius:8px;}
+        button.chip.active-blue{background:rgba(79,142,247,0.2);border-color:var(--blue);color:var(--blue);}
+        button.chip.active-green{background:rgba(16,217,126,0.2);border-color:var(--correct);color:var(--correct);}
+        button.chip.active-gold{background:rgba(245,200,66,0.2);border-color:var(--gold);color:var(--gold);}
+        button.chip.active-red{background:rgba(255,77,106,0.2);border-color:var(--wrong);color:var(--wrong);}
+        button.chip.active-purple{background:rgba(160,102,255,0.2);border-color:var(--purple);color:var(--purple);}
+
+        /* Utilities */
+        .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+        .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+        .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+        .mt-1{margin-top:10px;}.mt-2{margin-top:18px;}
+        .mb-1{margin-bottom:10px;}.mb-2{margin-bottom:18px;}
+        .flex-between{display:flex;justify-content:space-between;align-items:center;}
+        .flex-wrap{display:flex;flex-wrap:wrap;gap:8px;}
+        .text-correct{color:var(--correct);}.text-wrong{color:var(--wrong);}.text-center{text-align:center;}
+
+        /* HOME */
+        .home-header{text-align:center;margin-bottom:24px;padding-top:8px;}
+        .tagline{color:var(--muted);font-size:0.85rem;margin-top:4px;}
+        .cat-btn{font-size:0.85rem;padding:10px 12px;border-radius:10px;font-weight:600;}
+        .timed-btn{font-size:0.88rem;}
+        .timed-btn span{display:block;font-size:0.7rem;font-weight:400;color:var(--muted);margin-top:2px;}
+        .status-bar{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:14px;font-size:0.8rem;color:var(--muted);}
+        .status-dot{width:7px;height:7px;border-radius:50%;background:var(--correct);display:inline-block;}
+        .status-dot.offline{background:var(--muted);}
+        .home-bottom-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+
+        /* SETTINGS SCREEN */
+        .settings-row{padding:14px 0;border-bottom:1px solid var(--border);}
+        .settings-row:last-child{border-bottom:none;padding-bottom:0;}
+        .settings-row:first-child{padding-top:0;}
+        .settings-label{font-weight:700;font-size:0.92rem;margin-bottom:4px;}
+        .settings-desc{font-size:0.78rem;color:var(--muted);margin-bottom:10px;}
+        .exam-badge{display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:100px;border:1px solid;margin-left:6px;vertical-align:middle;}
+        .badge-bank{border-color:var(--gold);color:var(--gold);}
+        .badge-ssc{border-color:var(--purple);color:var(--purple);}
+        .badge-school{border-color:var(--muted);color:var(--muted);}
+        .range-preview{font-size:0.78rem;color:var(--muted);margin-top:6px;font-style:italic;}
+
+        /* SETUP */
+        .cat-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);}
+        .cat-row:last-child{border-bottom:none;padding-bottom:0;}
+        .cat-row:first-child{padding-top:0;}
+        .cat-name{font-weight:600;font-size:0.9rem;}
+        .diff-selectors{display:flex;gap:6px;}
+        .diff-selectors button{width:auto;padding:5px 12px;font-size:0.78rem;border-radius:6px;}
+        .diff-selectors .active-easy{background:rgba(16,217,126,0.18);border-color:var(--correct);color:var(--correct);}
+        .diff-selectors .active-med{background:rgba(245,200,66,0.18);border-color:var(--gold);color:var(--gold);}
+        .diff-selectors .active-hard{background:rgba(255,77,106,0.18);border-color:var(--wrong);color:var(--wrong);}
+        .range-row{display:flex;align-items:center;gap:14px;}
+        .range-val{font-family:'Courier New',Courier,monospace;font-size:1.4rem;font-weight:700;color:var(--blue);min-width:44px;text-align:center;}
+        input[type="range"]{flex:1;height:5px;border-radius:3px;background:var(--surface3);border:none;outline:none;accent-color:var(--blue);cursor:pointer;}
+        .setup-label{font-size:0.72rem;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:block;}
+        select{width:100%;padding:12px 14px;background:var(--surface2);color:var(--text);border:1px solid var(--border-bright);border-radius:var(--radius-sm);font-family:inherit;font-size:0.95rem;outline:none;cursor:pointer;}
+        select:focus{border-color:var(--blue);}
+        .quick-set{display:flex;gap:6px;}
+        .quick-set button{width:auto;font-size:0.8rem;padding:6px 14px;border-radius:7px;}
+
+        /* QUIZ */
+        .quiz-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+        .score-pill{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:8px 18px;font-weight:700;font-size:1.05rem;}
+        .score-pill .sep{color:var(--border-bright);font-weight:300;}
+        #quiz-timer{font-family:'Courier New',Courier,monospace;font-size:1rem;font-weight:700;background:var(--surface);border:1px solid var(--border);border-radius:100px;padding:8px 18px;transition:color 0.3s;}
+        .timer-red{color:var(--wrong)!important;animation:pulse 1s infinite;}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        .progress-track{width:100%;height:4px;background:var(--surface3);border-radius:3px;margin-bottom:8px;overflow:hidden;}
+        #progress-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--blue),var(--purple));border-radius:3px;transition:width 0.4s ease;}
+        .q-counter{text-align:center;font-size:0.78rem;color:var(--muted);margin-bottom:28px;}
+        .question-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:36px 20px;text-align:center;margin-bottom:28px;position:relative;overflow:hidden;}
+        .question-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(79,142,247,0.04),transparent);pointer-events:none;}
+        .cat-badge{display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:100px;border:1px solid;margin-bottom:14px;opacity:0.8;}
+        #question-text{font-family:'Courier New',Courier,monospace;font-size:2.5rem;font-weight:700;letter-spacing:1px;line-height:1.2;}
+        .answer-area{text-align:center;}
+        #answer-input{font-family:'Courier New',Courier,monospace;font-size:2.3rem;font-weight:700;width:76%;text-align:center;padding:13px;background:var(--surface);border:2px solid var(--border-bright);border-radius:var(--radius);color:var(--text);outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+        #answer-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,142,247,0.1);}
+        #submit-btn{width:76%;margin:13px auto 0;display:none;padding:13px;}
+        .hint-text{color:var(--muted);font-size:0.78rem;text-align:center;margin-top:14px;}
+        .end-btn-wrap{margin-top:38px;}
+        .end-btn-wrap button{opacity:0.4;font-size:0.85rem;}
+        .end-btn-wrap button:hover{opacity:0.7;}
+
+        /* FLASH */
+        #flash-overlay{position:fixed;inset:0;z-index:999;display:flex;flex-direction:column;justify-content:center;align-items:center;pointer-events:none;opacity:0;transition:opacity 0.1s;}
+        #flash-icon{font-size:5rem;}
+        #flash-correct-ans{font-family:'Courier New',Courier,monospace;font-size:2.4rem;font-weight:700;margin-top:14px;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,0.5);}
+
+        /* RESULTS */
+        .results-hero{text-align:center;padding:28px 20px 22px;background:var(--surface);border:1px solid var(--border);border-radius:20px;margin-bottom:14px;position:relative;overflow:hidden;}
+        .results-hero::before{content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:220px;height:220px;border-radius:50%;filter:blur(70px);opacity:0.28;}
+        .grade-excellent::before{background:var(--correct);}
+        .grade-good::before{background:var(--blue);}
+        .grade-average::before{background:var(--gold);}
+        .grade-needswork::before{background:var(--wrong);}
+        .grade-pct{font-family:'Courier New',Courier,monospace;font-size:4.5rem;font-weight:700;line-height:1;margin-bottom:6px;position:relative;}
+        .grade-label{font-size:0.95rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;opacity:0.85;position:relative;}
+        .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+        .stat-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 8px;text-align:center;}
+        .stat-label{font-size:0.7rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px;}
+        .stat-val{font-family:'Courier New',Courier,monospace;font-size:1.25rem;font-weight:700;}
+        table{width:100%;border-collapse:collapse;font-size:0.87rem;}
+        th{color:var(--muted);font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:8px 6px;text-align:left;border-bottom:1px solid var(--border);}
+        td{padding:10px 6px;border-bottom:1px solid var(--border);font-weight:500;}
+        tr:last-child td{border-bottom:none;}
+        .acc-bar-cell{display:flex;align-items:center;gap:8px;}
+        .acc-mini-bar{height:4px;background:var(--surface3);flex:1;border-radius:3px;overflow:hidden;}
+        .acc-mini-fill{height:100%;border-radius:3px;transition:width 0.5s;}
+        .table-scroll{overflow-x:auto;}
+        .action-row{display:flex;gap:10px;margin-bottom:12px;}
+        .action-row button{flex:1;font-size:0.88rem;}
+
+        /* WRONG ANSWERS */
+        .wrong-card{background:rgba(255,77,106,0.05);border:1px solid rgba(255,77,106,0.18);border-radius:var(--radius-sm);padding:14px;margin-bottom:10px;}
+        .wrong-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:8px;}
+        .wrong-question{font-family:'Courier New',Courier,monospace;font-size:1rem;font-weight:700;}
+        .wrong-answers-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+        .ans-chip{font-family:'Courier New',Courier,monospace;font-size:0.82rem;font-weight:700;padding:4px 10px;border-radius:6px;}
+        .ans-chip.user{background:rgba(255,77,106,0.14);color:var(--wrong);border:1px solid rgba(255,77,106,0.22);}
+        .ans-chip.correct{background:rgba(16,217,126,0.12);color:var(--correct);border:1px solid rgba(16,217,126,0.22);}
+        .ans-time{font-size:0.74rem;color:var(--muted);white-space:nowrap;}
+        .solution-box{background:rgba(245,200,66,0.05);border:1px solid rgba(245,200,66,0.18);border-radius:8px;padding:11px 13px;}
+        .sol-title{font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gold);margin-bottom:7px;}
+        .solution-steps{font-size:0.85rem;line-height:1.7;}
+        .solution-steps strong{color:var(--gold);font-family:'Courier New',Courier,monospace;}
+
+        /* HISTORY */
+        .history-card{border-left:3px solid var(--blue);padding-left:14px;}
+        .chart-container{display:flex;align-items:flex-end;justify-content:space-between;height:110px;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border);margin-bottom:14px;}
+        .bar-wrapper{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px;height:100%;justify-content:flex-end;}
+        .bar-pct{font-size:0.62rem;color:var(--muted);min-height:14px;}
+        .bar{width:100%;background:linear-gradient(180deg,var(--blue),var(--purple));border-radius:4px 4px 0 0;min-height:3px;}
+        .bar-label{font-size:0.65rem;color:var(--muted);font-weight:600;}
+
+        /* INSTALL BANNER */
+        #install-banner{background:linear-gradient(135deg,rgba(79,142,247,0.15),rgba(160,102,255,0.15));border:1px solid rgba(79,142,247,0.3);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+        #install-banner p{font-size:0.85rem;font-weight:600;color:var(--text);}
+        #install-banner p span{display:block;font-size:0.75rem;color:var(--muted);font-weight:400;margin-top:2px;}
+        #install-btn{width:auto;padding:8px 16px;font-size:0.85rem;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;color:#fff;border-radius:8px;white-space:nowrap;}
+
+        /* Toast */
+        #toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--surface2);border:1px solid var(--border-bright);color:var(--text);padding:11px 24px;border-radius:100px;font-size:0.88rem;font-weight:600;z-index:2000;transition:transform 0.3s ease;pointer-events:none;white-space:nowrap;}
+        #toast.show{transform:translateX(-50%) translateY(0);}
+
+        /* Animation */
+        @keyframes fadeSlide{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+        .screen-enter{animation:fadeSlide 0.28s ease forwards;}
+
+        @media(max-width:380px){
+            #question-text{font-size:2rem;}
+            #answer-input{font-size:1.8rem;}
+            .grade-pct{font-size:3.5rem;}
+        }
+    </style>
+</head>
+<body>
+
+<div id="flash-overlay">
+    <div id="flash-icon"></div>
+    <div id="flash-correct-ans"></div>
+</div>
+<div id="toast"></div>
+
+<div class="container">
+
+<!-- ══ HOME ══ -->
+<div id="screen-home">
+    <div class="home-header">
+        <h1>⚡ Speed Maths Pro</h1>
+        <p class="tagline">Bank · SSC CGL · Mental Calculation Trainer</p>
+    </div>
+
+    <div id="install-banner" class="hidden">
+        <p>Install as App<span>Opens full screen, works offline</span></p>
+        <button id="install-btn" onclick="installApp()">📲 Install</button>
+    </div>
+
+    <div class="card">
+        <p class="mode-label">Mode A — Category Practice</p>
+        <div class="grid-2" id="home-categories"></div>
+        <button class="primary mt-2" onclick="selectCategory('All Mix')">🔀 All Mix — All 11 Categories</button>
+    </div>
+
+    <div class="card">
+        <p class="mode-label">Mode B — Timed Challenge</p>
+        <div class="grid-2">
+            <button class="timed-btn" onclick="startTimedMode(5)">⏱ 5 Min<span>Sprint</span></button>
+            <button class="timed-btn" onclick="startTimedMode(10)">⏱ 10 Min<span>Standard</span></button>
+            <button class="timed-btn" onclick="startTimedMode(20)">⏱ 20 Min<span>Endurance</span></button>
+            <button class="timed-btn" onclick="startTimedMode(0)">∞ No Limit<span>Free Practice</span></button>
+        </div>
+    </div>
+
+    <div class="home-bottom-row">
+        <button onclick="showScreen('screen-settings')">⚙️ Settings &amp; Ranges</button>
+        <button onclick="goToHistory()">📊 History</button>
+    </div>
+
+    <div class="status-bar">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="online-status">Online</span>
+    </div>
+</div>
+
+<!-- ══ SETTINGS ══ -->
+<div id="screen-settings" class="hidden">
+    <button class="back-btn" onclick="showScreen('screen-home')">← Back</button>
+    <h2>Settings</h2>
+    <p class="subtitle">Customise ranges for your exam target</p>
+
+    <div class="card">
+        <div class="settings-row">
+            <div class="settings-label">🎯 Exam Target</div>
+            <div class="settings-desc">Sets the default difficulty style for new quizzes</div>
+            <div class="flex-wrap" id="exam-target-btns">
+                <button class="chip" onclick="setExamTarget('school')" id="et-school">🏫 School</button>
+                <button class="chip" onclick="setExamTarget('bank')" id="et-bank">🏦 Bank PO / Clerk</button>
+                <button class="chip" onclick="setExamTarget('ssc')" id="et-ssc">📋 SSC CGL / CHSL</button>
+            </div>
+        </div>
+
+        <div class="settings-row">
+            <div class="settings-label">✖️ Multiplication Table Range</div>
+            <div class="settings-desc">How high should table questions go? Bank exams test up to 20-25.</div>
+            <div class="flex-wrap" id="table-range-btns">
+                <button class="chip" onclick="setSetting('tableMax',10)" id="tr-10">Up to 10</button>
+                <button class="chip" onclick="setSetting('tableMax',20)" id="tr-20">Up to 20</button>
+                <button class="chip" onclick="setSetting('tableMax',30)" id="tr-30">Up to 30</button>
+                <button class="chip" onclick="setSetting('tableMax',50)" id="tr-50">Up to 50</button>
+            </div>
+            <div class="range-preview" id="table-preview"></div>
+        </div>
+
+        <div class="settings-row">
+            <div class="settings-label">² Squares Range</div>
+            <div class="settings-desc">SSC/Bank ask squares up to 50-60. Start lower, grow over time.</div>
+            <div class="flex-wrap" id="sq-range-btns">
+                <button class="chip" onclick="setSetting('squareMax',30)" id="sq-30">Up to 30²</button>
+                <button class="chip" onclick="setSetting('squareMax',50)" id="sq-50">Up to 50²</button>
+                <button class="chip" onclick="setSetting('squareMax',75)" id="sq-75">Up to 75²</button>
+                <button class="chip" onclick="setSetting('squareMax',100)" id="sq-100">Up to 100²</button>
+            </div>
+            <div class="range-preview" id="sq-preview"></div>
+        </div>
+
+        <div class="settings-row">
+            <div class="settings-label">³ Cubes Range</div>
+            <div class="settings-desc">Bank exams commonly test cubes up to 25-30.</div>
+            <div class="flex-wrap" id="cb-range-btns">
+                <button class="chip" onclick="setSetting('cubeMax',15)" id="cb-15">Up to 15³</button>
+                <button class="chip" onclick="setSetting('cubeMax',25)" id="cb-25">Up to 25³</button>
+                <button class="chip" onclick="setSetting('cubeMax',35)" id="cb-35">Up to 35³</button>
+            </div>
+            <div class="range-preview" id="cb-preview"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <p class="sec-title">📌 What Real Exams Ask</p>
+        <div style="font-size:0.85rem;line-height:2;color:var(--muted);">
+            <div><span style="color:var(--gold);font-weight:700;">Bank PO/Clerk</span> — Tables 1–20, Squares 1–50, Cubes 1–20</div>
+            <div><span style="color:var(--purple);font-weight:700;">SSC CGL Tier 1</span> — Tables 1–25, Squares 1–50, Cubes 1–25</div>
+            <div><span style="color:var(--blue);font-weight:700;">SSC CGL Tier 2</span> — Tables 1–30, Squares 1–75, Cubes 1–30</div>
+            <div><span style="color:var(--correct);font-weight:700;">RBI Grade B</span> — Tables 1–30, Squares 1–100, all cubes</div>
+        </div>
+    </div>
+
+    <button class="primary mt-1" onclick="saveSettings()">✅ Save Settings</button>
+</div>
+
+<!-- ══ SETUP ══ -->
+<div id="screen-setup" class="hidden">
+    <button class="back-btn" onclick="showScreen('screen-home')">← Back</button>
+    <h2>Setup</h2>
+    <p class="subtitle" id="setup-subtitle"></p>
+
+    <div class="card">
+        <div class="flex-between mb-1">
+            <span class="setup-label" style="margin:0;">Difficulty</span>
+            <div class="quick-set diff-selectors">
+                <button onclick="setAllDiff(1)">Easy</button>
+                <button onclick="setAllDiff(2)">Med</button>
+                <button onclick="setAllDiff(3)">Hard</button>
+            </div>
+        </div>
+        <div id="category-diff-list"></div>
+    </div>
+
+    <div class="card">
+        <span class="setup-label">Number of Questions</span>
+        <div class="range-row">
+            <input type="range" id="num-q-slider" min="10" max="200" value="20"
+                oninput="document.getElementById('num-q-val').innerText=this.value">
+            <div class="range-val" id="num-q-val">20</div>
+        </div>
+    </div>
+
+    <div class="card" id="timer-setup-group">
+        <span class="setup-label">Time Limit</span>
+        <select id="timer-select">
+            <option value="0">No Limit (Stopwatch only)</option>
+            <option value="5">5 Minutes</option>
+            <option value="10">10 Minutes</option>
+            <option value="20">20 Minutes</option>
+        </select>
+    </div>
+
+    <button class="primary mt-2" style="padding:16px;font-size:1.1rem;" onclick="startQuiz()">🚀 Start Quiz</button>
+    <p class="text-center mt-1" style="color:var(--gold);font-size:0.85rem;">📝 Keep pen &amp; paper ready!</p>
+</div>
+
+<!-- ══ QUIZ ══ -->
+<div id="screen-quiz" class="hidden">
+    <div class="quiz-topbar">
+        <div class="score-pill">
+            <span class="text-correct">✓ <span id="score-correct">0</span></span>
+            <span class="sep">|</span>
+            <span class="text-wrong">✗ <span id="score-wrong">0</span></span>
+        </div>
+        <div id="quiz-timer">00:00</div>
+    </div>
+    <div class="progress-track"><div id="progress-fill"></div></div>
+    <div class="q-counter">Question <span id="q-current-num">1</span> of <span id="q-total-num">20</span></div>
+    <div class="question-card">
+        <div id="cat-badge" class="cat-badge"></div>
+        <div id="question-text">?</div>
+    </div>
+    <div class="answer-area">
+        <input type="number" id="answer-input" inputmode="numeric" placeholder="?" autocomplete="off">
+        <button class="primary" id="submit-btn">Submit ↵</button>
+    </div>
+    <p class="hint-text">Press Enter or tap Submit</p>
+    <div class="end-btn-wrap">
+        <button class="danger" onclick="endQuiz(true)">✕ End Quiz Early</button>
+    </div>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div id="screen-results" class="hidden">
+    <h2 style="margin-bottom:16px;">Results</h2>
+    <div class="results-hero" id="results-hero">
+        <div class="grade-pct" id="res-grade">--%</div>
+        <div class="grade-label" id="res-msg">--</div>
+    </div>
+    <div class="stat-grid">
+        <div class="stat-box"><div class="stat-label">Correct</div><div class="stat-val text-correct" id="res-correct">0</div></div>
+        <div class="stat-box"><div class="stat-label">Wrong</div><div class="stat-val text-wrong" id="res-wrong">0</div></div>
+        <div class="stat-box"><div class="stat-label">Skipped</div><div class="stat-val" id="res-skipped">0</div></div>
+        <div class="stat-box"><div class="stat-label">Time</div><div class="stat-val" id="res-time">0:00</div></div>
+        <div class="stat-box"><div class="stat-label">Avg / Q</div><div class="stat-val" id="res-avg-time">--</div></div>
+        <div class="stat-box"><div class="stat-label">Fastest</div><div class="stat-val" id="res-fastest">--</div></div>
+    </div>
+    <div class="action-row">
+        <button class="success-btn" onclick="copyResults()">📋 Copy Results</button>
+        <button id="btn-practice-weak" style="display:none;">🎯 Practice Weak</button>
+    </div>
+    <div class="card">
+        <p class="sec-title">Category Breakdown</p>
+        <div class="table-scroll">
+            <table id="res-cat-table"><tr><th>Category</th><th>Accuracy</th><th>Avg Time</th></tr></table>
+        </div>
+    </div>
+    <div class="card">
+        <p class="sec-title">❌ Wrong Answers — Easy Solutions</p>
+        <div id="wrong-answers-list"></div>
+    </div>
+    <button class="primary mt-1" onclick="showScreen('screen-home')">← Back to Home</button>
+</div>
+
+<!-- ══ HISTORY ══ -->
+<div id="screen-history" class="hidden">
+    <button class="back-btn" onclick="showScreen('screen-home')">← Back</button>
+    <h2>Your Progress</h2>
+    <div class="card">
+        <p class="sec-title">Last 7 Days — Accuracy</p>
+        <div class="chart-container" id="history-chart"></div>
+    </div>
+    <div class="card">
+        <p class="sec-title">Personal Bests — Fastest Correct</p>
+        <div class="table-scroll">
+            <table id="best-scores-table"><tr><th>Category</th><th>Fastest</th></tr></table>
+        </div>
+    </div>
+    <p class="sec-title" style="margin-top:18px;">Recent Sessions</p>
+    <div id="history-list"></div>
+    <button class="danger mt-1" onclick="clearHistory()">🗑 Reset All Data</button>
+</div>
+
+</div><!-- /container -->
+
+<script>
+/* ════════════════════════════════
+   PWA — Service Worker & Install
+════════════════════════════════ */
+let deferredInstallPrompt = null;
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+    });
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    document.getElementById('install-banner').classList.remove('hidden');
+});
+
+window.addEventListener('appinstalled', () => {
+    document.getElementById('install-banner').classList.add('hidden');
+    showToast('✅ App installed successfully!');
+});
+
+function installApp() {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(() => { deferredInstallPrompt = null; });
+}
+
+/* ════════════════════════════════
+   1. DATA & SETTINGS
+════════════════════════════════ */
+const DEFAULT_SETTINGS = {
+    tableMax:  20,
+    squareMax: 50,
+    cubeMax:   25,
+    examTarget: 'bank'
+};
+
+const categories = [
+    { id:'arithmetic', name:'Arithmetic', color:'var(--c1)'  },
+    { id:'multimult',  name:'Multi-Mult', color:'var(--c2)'  },
+    { id:'multiply',   name:'Multiply',   color:'var(--c3)'  },
+    { id:'percent',    name:'Percent',    color:'var(--c4)'  },
+    { id:'fracperc',   name:'Frac %',     color:'var(--c5)'  },
+    { id:'squares',    name:'Squares',    color:'var(--c6)'  },
+    { id:'cubes',      name:'Cubes',      color:'var(--c7)'  },
+    { id:'sqrt_n',     name:'√ × n',      color:'var(--c8)'  },
+    { id:'cbrt_n',     name:'∛ × n',      color:'var(--c9)'  },
+    { id:'sqrt_cbrt',  name:'√ + ∛',      color:'var(--c10)' },
+    { id:'fractions',  name:'Fractions',  color:'var(--c11)' }
+];
+
+const fractionsList = [
+    { text:"12½",   val:1/8, div:8, name:"1/8" },
+    { text:"37½",   val:3/8, div:8, name:"3/8" },
+    { text:"62½",   val:5/8, div:8, name:"5/8" },
+    { text:"87½",   val:7/8, div:8, name:"7/8" },
+    { text:"16⅔",   val:1/6, div:6, name:"1/6" },
+    { text:"33⅓",   val:1/3, div:3, name:"1/3" },
+    { text:"66⅔",   val:2/3, div:3, name:"2/3" },
+    { text:"71³⁄₇", val:5/7, div:7, name:"5/7" },
+    { text:"14²⁄₇", val:1/7, div:7, name:"1/7" }
+];
+
+let state = {
+    mode:'', selectedCategories:[], difficulties:{},
+    totalQuestions:20, timeLimitMs:0,
+    questions:[], currentIndex:0, correct:0, wrong:0,
+    startTime:0, timerInterval:null, questionStartTime:0, isGameOver:false,
+    history:  JSON.parse(localStorage.getItem('speedMathsHistory')  || '[]'),
+    settings: JSON.parse(localStorage.getItem('speedMathsSettings') || 'null') || Object.assign({}, DEFAULT_SETTINGS)
+};
+
+/* ════════════════════════════════
+   2. UTILS
+════════════════════════════════ */
+const randInt  = (min,max) => Math.floor(Math.random()*(max-min+1))+min;
+const pickRand = arr => arr[Math.floor(Math.random()*arr.length)];
+const fmtTime  = sec => { const m=Math.floor(sec/60),s=Math.floor(sec%60); return `${m}:${s<10?'0':''}${s}`; };
+
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+window.addEventListener('online',  updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+function updateOnlineStatus() {
+    const on = navigator.onLine;
+    document.getElementById('online-status').textContent = on ? 'Online' : 'Offline';
+    document.getElementById('status-dot').className = 'status-dot' + (on?'':' offline');
+}
+
+/* ════════════════════════════════
+   3. SETTINGS SCREEN
+════════════════════════════════ */
+function renderSettingsUI() {
+    const s = state.settings;
+    // Exam target
+    ['school','bank','ssc'].forEach(t => {
+        const el = document.getElementById('et-'+t);
+        const map = {school:'active-green', bank:'active-gold', ssc:'active-purple'};
+        el.className = 'chip' + (s.examTarget===t?' '+map[t]:'');
+    });
+    // Table range
+    [10,20,30,50].forEach(v => {
+        const el = document.getElementById('tr-'+v);
+        el.className = 'chip' + (s.tableMax===v?' active-blue':'');
+    });
+    // Squares range
+    [30,50,75,100].forEach(v => {
+        const el = document.getElementById('sq-'+v);
+        el.className = 'chip' + (s.squareMax===v?' active-gold':'');
+    });
+    // Cubes range
+    [15,25,35].forEach(v => {
+        const el = document.getElementById('cb-'+v);
+        el.className = 'chip' + (s.cubeMax===v?' active-purple':'');
+    });
+    // Previews
+    document.getElementById('table-preview').textContent = `Current: will ask e.g. ${s.tableMax-2} × ${s.tableMax-1} = ${(s.tableMax-2)*(s.tableMax-1)}`;
+    document.getElementById('sq-preview').textContent    = `Current: will ask up to ${s.squareMax}² = ${s.squareMax*s.squareMax}`;
+    document.getElementById('cb-preview').textContent    = `Current: will ask up to ${s.cubeMax}³ = ${s.cubeMax**3}`;
+}
+
+function setExamTarget(t) {
+    const presets = {
+        school: {tableMax:10, squareMax:30, cubeMax:15, examTarget:'school'},
+        bank:   {tableMax:20, squareMax:50, cubeMax:25, examTarget:'bank'},
+        ssc:    {tableMax:30, squareMax:75, cubeMax:30, examTarget:'ssc'}
+    };
+    Object.assign(state.settings, presets[t]);
+    renderSettingsUI();
+}
+
+function setSetting(key, val) {
+    state.settings[key] = val;
+    renderSettingsUI();
+}
+
+function saveSettings() {
+    localStorage.setItem('speedMathsSettings', JSON.stringify(state.settings));
+    showToast('✅ Settings saved!');
+    showScreen('screen-home');
+}
+
+/* ════════════════════════════════
+   4. SOLUTION BUILDER
+════════════════════════════════ */
+function buildSolution(q) {
+    const { cat, a, meta } = q;
+    if (!meta) return null;
+    switch (cat) {
+        case 'arithmetic': {
+            const {a:x,b:y,c:z,op} = meta;
+            if(op==='add2')     return `<strong>${x}</strong> + <strong>${y}</strong> = <strong>${x+y}</strong>`;
+            if(op==='add_sub3') return `Step 1: ${x} + ${y} = <strong>${x+y}</strong><br>Step 2: ${x+y} − ${z} = <strong>${x+y-z}</strong>`;
+            return `Step 1: ${x} − ${y} = <strong>${x-y}</strong><br>Step 2: ${x-y} + ${z} = <strong>${x-y+z}</strong>`;
+        }
+        case 'multimult': {
+            const {a:x,b:y,c:z,d:w} = meta;
+            return `(${x}×${y}) + (${z}×${w})<br>= <strong>${x*y}</strong> + <strong>${z*w}</strong> = <strong>${(x*y)+(z*w)}</strong>`;
+        }
+        case 'multiply': {
+            const {a:x,b:y} = meta;
+            if(y<=12) return `${x} × ${y} = <strong>${x*y}</strong> (times table)`;
+            const tens=Math.floor(y/10)*10, rem=y-tens;
+            if(rem===0) return `${x} × ${y} = ${x} × 10 × ${y/10} = <strong>${x*y}</strong>`;
+            return `Split: ${x} × ${y}<br>= ${x}×${tens} + ${x}×${rem}<br>= <strong>${x*tens}</strong> + <strong>${x*rem}</strong> = <strong>${x*y}</strong>`;
+        }
+        case 'percent': {
+            const {p,num} = meta;
+            if(p%10===0) return `10% of ${num} = <strong>${num/10}</strong> → ×${p/10} = <strong>${(p*num)/100}</strong>`;
+            if(p%5===0)  return `5% of ${num} = <strong>${num/20}</strong> → ×${p/5} = <strong>${(p*num)/100}</strong>`;
+            return `(${num} × ${p}) ÷ 100 = <strong>${(p*num)/100}</strong>`;
+        }
+        case 'fracperc': {
+            const {fracText,fracName,div,numP,mult} = meta;
+            return `${fracText}% = fraction <strong>${fracName}</strong><br>${numP} ÷ ${div} = <strong>${Math.round(numP/div)}</strong> × ${mult} = <strong>${a}</strong>`;
+        }
+        case 'squares': {
+            const {a:x,b:y,sign} = meta;
+            if(sign===undefined){
+                if(x>20){
+                    const base=Math.round(x/10)*10, d=x-base;
+                    if(d===0) return `${x}² = (${base})² = <strong>${x*x}</strong>`;
+                    return `(${base}+${d})² = ${base}²+2×${base}×${d}+${d}²<br>= <strong>${base*base}</strong>+<strong>${2*base*d}</strong>+<strong>${d*d}</strong> = <strong>${x*x}</strong>`;
+                }
+                return `${x} × ${x} = <strong>${x*x}</strong>`;
+            }
+            if(sign==='-') return `a²−b² = (a+b)(a−b)<br>(${x}+${y})(${x}−${y}) = ${x+y} × ${x-y} = <strong>${(x*x)-(y*y)}</strong>`;
+            return `${x}² + ${y}² = ${x*x} + ${y*y} = <strong>${x*x+y*y}</strong>`;
+        }
+        case 'cubes': {
+            const {a:x,b:y} = meta;
+            if(y===undefined) return `${x}×${x}×${x} = ${x*x}×${x} = <strong>${x*x*x}</strong>`;
+            return `${x}³ + ${y}³ = ${x*x*x} + ${y*y*y} = <strong>${(x*x*x)+(y*y*y)}</strong>`;
+        }
+        case 'sqrt_n': {
+            const {sq,root,n} = meta;
+            return `√${sq} = <strong>${root}</strong> (because ${root}²=${sq})<br>${root} × ${n} = <strong>${root*n}</strong>`;
+        }
+        case 'cbrt_n': {
+            const {cb,root,n} = meta;
+            return `∛${cb} = <strong>${root}</strong> (because ${root}³=${cb})<br>${root} × ${n} = <strong>${root*n}</strong>`;
+        }
+        case 'sqrt_cbrt': {
+            const {sq,root1,cb,root2,sign} = meta;
+            const res=sign==='+'?root1+root2:root1-root2;
+            return `√${sq} = <strong>${root1}</strong>,  ∛${cb} = <strong>${root2}</strong><br>${root1} ${sign==='+'?'+':'−'} ${root2} = <strong>${res}</strong>`;
+        }
+        case 'fractions': {
+            const {p1,q1,num1,mult1,p2,q2,num2,mult2} = meta;
+            return `(${p1}/${q1})×${num1}: ${num1}÷${q1}=<strong>${mult1}</strong>, ×${p1}=<strong>${p1*mult1}</strong><br>`+
+                   `(${p2}/${q2})×${num2}: ${num2}÷${q2}=<strong>${mult2}</strong>, ×${p2}=<strong>${p2*mult2}</strong><br>`+
+                   `Total = ${p1*mult1} + ${p2*mult2} = <strong>${a}</strong>`;
+        }
+    }
+    return null;
+}
+
+/* ════════════════════════════════
+   5. MATH GENERATORS
+   All use state.settings for ranges
+════════════════════════════════ */
+const generators = {
+    arithmetic(diff) {
+        let a,b,c,ans,text,meta;
+        // Scale number size with difficulty — bank level uses bigger numbers
+        const lo = diff===1?10:(diff===2?100:400);
+        const hi = diff===1?200:(diff===2?700:999);
+        const lo2= diff===1?10:(diff===2?100:300);
+        const hi2= diff===1?100:(diff===2?500:800);
+        if(diff===1){
+            a=randInt(lo,hi); b=randInt(lo2,lo2*2);
+            ans=a+b; text=`${a} + ${b}`; meta={a,b,op:'add2'};
+        } else if(diff===2){
+            a=randInt(lo,hi); b=randInt(lo2,hi2); c=randInt(50,300);
+            ans=a+b-c; text=`${a} + ${b} − ${c}`; meta={a,b,c,op:'add_sub3'};
+        } else {
+            a=randInt(lo,hi); b=randInt(lo2,hi2); c=randInt(200,900);
+            ans=a-b+c; text=`${a} − ${b} + ${c}`; meta={a,b,c,op:'sub_add3'};
+        }
+        return {q:text,a:ans,cat:'arithmetic',meta};
+    },
+
+    multimult(diff) {
+        const tMax = state.settings.tableMax;
+        let a,b,c,d;
+        // Use tableMax to scale ranges
+        const lo = diff===1?2:Math.floor(tMax*0.3);
+        const hi = diff===1?Math.min(tMax,12):(diff===2?Math.floor(tMax*0.7):tMax);
+        a=randInt(lo,hi); b=randInt(lo,hi); c=randInt(lo,hi); d=randInt(lo,hi);
+        return {q:`${a} × ${b} + ${c} × ${d}`,a:(a*b)+(c*d),cat:'multimult',meta:{a,b,c,d}};
+    },
+
+    multiply(diff) {
+        const tMax = state.settings.tableMax;
+        let a,b;
+        if(diff===1){
+            // Basic table drill using full configured range
+            a=randInt(2,tMax); b=randInt(2,tMax);
+        } else if(diff===2){
+            // One number beyond range, one within
+            a=randInt(tMax,tMax*2); b=randInt(2,tMax);
+        } else {
+            // Both large — realistic bank exam level
+            a=randInt(tMax,tMax*2); b=randInt(tMax,tMax*2);
+            if(Math.random()>0.6){ a=randInt(100,999); b=randInt(3,tMax); }
+        }
+        return {q:`${a} × ${b}`,a:a*b,cat:'multiply',meta:{a,b}};
+    },
+
+    percent(diff) {
+        let p,num;
+        if(diff===1){ p=randInt(1,9)*10; num=randInt(1,9)*100; }
+        else if(diff===2){ p=randInt(1,19)*5; num=randInt(10,80)*10; }
+        else {
+            // Bank level: odd percentages, large numbers
+            const templates = [
+                ()=>{ p=randInt(1,99); num=randInt(10,99)*100; },
+                ()=>{ p=randInt(1,49)*2+1; num=randInt(20,200)*50; }, // odd %
+                ()=>{ p=randInt(3,47)*2; num=randInt(50,500)*20; }
+            ];
+            pickRand(templates)();
+        }
+        const ans=(p*num)/100;
+        // Only generate if answer is a whole number
+        if(ans!==Math.floor(ans)) return generators.percent(diff);
+        return {q:`${p}% of ${num}`,a:ans,cat:'percent',meta:{p,num}};
+    },
+
+    fracperc(diff) {
+        let frac=pickRand(fractionsList);
+        if(diff===1&&frac.div>6) frac=fractionsList[0];
+        const mult=diff===1?randInt(2,10):(diff===2?randInt(10,40):randInt(30,120));
+        const numP=frac.div*mult*(Math.random()>0.5?10:1);
+        const ans=Math.round(numP*frac.val);
+        return {q:`${frac.text}% of ${numP}`,a:ans,cat:'fracperc',
+            meta:{fracText:frac.text,fracName:frac.name,div:frac.div,numP,mult:numP/frac.div}};
+    },
+
+    squares(diff) {
+        const sMax = state.settings.squareMax;
+        const lo  = diff===1?2:Math.floor(sMax*0.3);
+        const mid = Math.floor(sMax*0.6);
+        const hi  = sMax;
+        if(diff===1){
+            const a=randInt(2,Math.min(mid,30));
+            return {q:`${a}²`,a:a*a,cat:'squares',meta:{a}};
+        } else if(diff===2){
+            const a=randInt(Math.min(mid,20),Math.min(hi,50));
+            return {q:`${a}²`,a:a*a,cat:'squares',meta:{a}};
+        } else {
+            // Hard: full range, or a²±b² (bank exam favourite)
+            if(Math.random()>0.4){
+                const a=randInt(Math.floor(hi*0.4),hi), b=randInt(Math.floor(hi*0.2),Math.floor(hi*0.4));
+                const sign=Math.random()>0.5?'+':'-';
+                return {q:`${a}² ${sign} ${b}²`,a:sign==='+'?(a*a)+(b*b):(a*a)-(b*b),
+                    cat:'squares',meta:{a,b,sign}};
+            }
+            const a=randInt(Math.floor(hi*0.5),hi);
+            return {q:`${a}²`,a:a*a,cat:'squares',meta:{a}};
+        }
+    },
+
+    cubes(diff) {
+        const cMax = state.settings.cubeMax;
+        const lo  = diff===1?2:Math.floor(cMax*0.3);
+        const mid = Math.floor(cMax*0.55);
+        const hi  = cMax;
+        if(diff===1){
+            const a=randInt(2,Math.min(mid,12));
+            return {q:`${a}³`,a:a*a*a,cat:'cubes',meta:{a}};
+        } else if(diff===2){
+            const a=randInt(Math.min(mid,8),Math.min(hi,20));
+            return {q:`${a}³`,a:a*a*a,cat:'cubes',meta:{a}};
+        } else {
+            if(Math.random()>0.45){
+                const a=randInt(Math.floor(hi*0.3),Math.floor(hi*0.6));
+                const b=randInt(2,Math.floor(hi*0.35));
+                return {q:`${a}³ + ${b}³`,a:(a*a*a)+(b*b*b),cat:'cubes',meta:{a,b}};
+            }
+            const a=randInt(Math.floor(hi*0.5),hi);
+            return {q:`${a}³`,a:a*a*a,cat:'cubes',meta:{a}};
+        }
+    },
+
+    sqrt_n(diff) {
+        const sMax = state.settings.squareMax;
+        const root=diff===1?randInt(2,Math.min(15,Math.floor(sMax*0.3)))
+                          :(diff===2?randInt(10,Math.min(25,Math.floor(sMax*0.5)))
+                                   :randInt(15,sMax));
+        const n=diff===1?randInt(2,5):(diff===2?randInt(5,12):randInt(8,25));
+        return {q:`√${root*root} × ${n}`,a:root*n,cat:'sqrt_n',meta:{sq:root*root,root,n}};
+    },
+
+    cbrt_n(diff) {
+        const cMax = state.settings.cubeMax;
+        const root=diff===1?randInt(2,Math.min(6,Math.floor(cMax*0.3)))
+                          :(diff===2?randInt(4,Math.min(10,Math.floor(cMax*0.5)))
+                                   :randInt(6,cMax));
+        const n=diff===1?randInt(2,5):(diff===2?randInt(5,12):randInt(8,25));
+        return {q:`∛${root*root*root} × ${n}`,a:root*n,cat:'cbrt_n',meta:{cb:root*root*root,root,n}};
+    },
+
+    sqrt_cbrt(diff) {
+        const sMax=state.settings.squareMax, cMax=state.settings.cubeMax;
+        const r1=randInt(2,Math.min(sMax,30));
+        const r2=randInt(2,Math.min(cMax,15));
+        const sign=Math.random()>0.5?'+':'-';
+        const ans=sign==='+'?r1+r2:r1-r2;
+        return {q:`√${r1*r1} ${sign} ∛${r2*r2*r2}`,a:ans,cat:'sqrt_cbrt',
+            meta:{sq:r1*r1,root1:r1,cb:r2*r2*r2,root2:r2,sign}};
+    },
+
+    fractions(diff) {
+        let q1=randInt(2,10),p1=randInt(1,q1-1);
+        let q2=randInt(2,10),p2=randInt(1,q2-1);
+        if(diff>1){ q1=randInt(5,15); q2=randInt(5,15); }
+        if(diff===3){ q1=randInt(8,20); q2=randInt(8,20); }
+        const mult1=randInt(2,diff===3?20:12), num1=q1*mult1;
+        const mult2=randInt(2,diff===3?20:12), num2=q2*mult2;
+        return {q:`(${p1}/${q1})×${num1} + (${p2}/${q2})×${num2}`,a:(p1*mult1)+(p2*mult2),
+            cat:'fractions',meta:{p1,q1,num1,mult1,p2,q2,num2,mult2}};
+    }
+};
+
+/* ════════════════════════════════
+   6. NAVIGATION
+════════════════════════════════ */
+function showScreen(id) {
+    document.querySelectorAll('.container > div').forEach(d => {
+        if(d.id&&d.id.startsWith('screen-')) d.classList.add('hidden');
+    });
+    const el=document.getElementById(id);
+    el.classList.remove('hidden');
+    el.classList.remove('screen-enter');
+    void el.offsetWidth;
+    el.classList.add('screen-enter');
+    window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* Home category buttons */
+const homeCatDiv=document.getElementById('home-categories');
+categories.forEach(c=>{
+    const btn=document.createElement('button');
+    btn.className='cat-btn'; btn.textContent=c.name; btn.style.color=c.color;
+    btn.onclick=()=>selectCategory(c.id);
+    homeCatDiv.appendChild(btn);
+});
+
+function selectCategory(catId){
+    state.mode=catId==='All Mix'?'All Mix':'Category';
+    state.selectedCategories=catId==='All Mix'?categories.map(c=>c.id):[catId];
+    setupSetupScreen();
+}
+
+function startTimedMode(mins){
+    state.mode='Timed';
+    state.selectedCategories=categories.map(c=>c.id);
+    document.getElementById('timer-select').value=String(mins);
+    setupSetupScreen(true);
+}
+
+function goToHistory(){ renderHistory(); showScreen('screen-history'); }
+
+function setupSetupScreen(isTimed=false){
+    const subtitle=state.mode==='Category'
+        ?categories.find(c=>c.id===state.selectedCategories[0]).name+' Practice'
+        :'All Categories Mixed';
+    document.getElementById('setup-subtitle').textContent=subtitle;
+    const diffList=document.getElementById('category-diff-list');
+    diffList.innerHTML='';
+    state.selectedCategories.forEach(catId=>{
+        const cat=categories.find(c=>c.id===catId);
+        state.difficulties[catId]=state.difficulties[catId]||2;
+        const row=document.createElement('div');
+        row.className='cat-row';
+        row.innerHTML=`
+            <span class="cat-name" style="color:${cat.color}">${cat.name}</span>
+            <div class="diff-selectors">
+                <button class="${state.difficulties[catId]===1?'active-easy':''}" onclick="setDiff('${catId}',1)">E</button>
+                <button class="${state.difficulties[catId]===2?'active-med':''}"  onclick="setDiff('${catId}',2)">M</button>
+                <button class="${state.difficulties[catId]===3?'active-hard':''}" onclick="setDiff('${catId}',3)">H</button>
+            </div>`;
+        diffList.appendChild(row);
+    });
+    document.getElementById('timer-setup-group').style.display=isTimed?'none':'block';
+    showScreen('screen-setup');
+}
+
+function setDiff(catId,level){ state.difficulties[catId]=level; setupSetupScreen(state.mode==='Timed'); }
+function setAllDiff(level){ state.selectedCategories.forEach(c=>state.difficulties[c]=level); setupSetupScreen(state.mode==='Timed'); }
+
+/* ════════════════════════════════
+   7. GAME LOOP
+════════════════════════════════ */
+function startQuiz(){
+    state.totalQuestions=parseInt(document.getElementById('num-q-slider').value);
+    state.timeLimitMs=parseInt(document.getElementById('timer-select').value)*60*1000;
+    state.questions=[];
+    let attempts=0;
+    while(state.questions.length<state.totalQuestions && attempts<state.totalQuestions*5){
+        attempts++;
+        try{
+            const catId=pickRand(state.selectedCategories);
+            const diff=state.difficulties[catId]||2;
+            const qData=generators[catId](diff);
+            if(qData && qData.a===Math.floor(qData.a))  // ensure whole number answer
+                state.questions.push({...qData,timeTaken:0,userAns:null,isCorrect:false});
+        }catch(e){}
+    }
+    // Fill remaining if any
+    while(state.questions.length<state.totalQuestions)
+        state.questions.push({...generators.arithmetic(1),timeTaken:0,userAns:null,isCorrect:false});
+
+    state.currentIndex=0; state.correct=0; state.wrong=0; state.isGameOver=false;
+    document.getElementById('score-correct').textContent='0';
+    document.getElementById('score-wrong').textContent='0';
+    document.getElementById('q-total-num').textContent=state.totalQuestions;
+    showScreen('screen-quiz');
+    state.startTime=Date.now(); state.questionStartTime=Date.now();
+    if(state.timerInterval)clearInterval(state.timerInterval);
+    state.timerInterval=setInterval(updateTimer,250);
+    loadQuestion();
+}
+
+function updateTimer(){
+    if(state.isGameOver)return;
+    const elapsed=Date.now()-state.startTime;
+    const timerEl=document.getElementById('quiz-timer');
+    let displaySecs;
+    if(state.timeLimitMs>0){
+        const remaining=state.timeLimitMs-elapsed;
+        if(remaining<=0){endQuiz();return;}
+        displaySecs=Math.floor(remaining/1000);
+        timerEl.classList.toggle('timer-red',remaining<60000);
+    }else{
+        displaySecs=Math.floor(elapsed/1000);
+        timerEl.classList.remove('timer-red');
+    }
+    timerEl.textContent=fmtTime(displaySecs);
+}
+
+function loadQuestion(){
+    const qData=state.questions[state.currentIndex];
+    const cat=categories.find(c=>c.id===qData.cat);
+    document.getElementById('q-current-num').textContent=state.currentIndex+1;
+    document.getElementById('question-text').textContent=qData.q;
+    const badge=document.getElementById('cat-badge');
+    badge.textContent=cat.name; badge.style.color=cat.color; badge.style.borderColor=cat.color;
+    document.getElementById('progress-fill').style.width=`${(state.currentIndex/state.totalQuestions)*100}%`;
+    const inp=document.getElementById('answer-input');
+    inp.value=''; document.getElementById('submit-btn').style.display='none'; inp.focus();
+    state.questionStartTime=Date.now();
+}
+
+document.getElementById('answer-input').addEventListener('keydown',e=>{ if(e.key==='Enter')checkAnswer(); });
+document.getElementById('answer-input').addEventListener('input',function(){
+    document.getElementById('submit-btn').style.display=this.value.trim()?'block':'none';
+});
+document.getElementById('submit-btn').addEventListener('click',function(){ this.style.display='none'; checkAnswer(); });
+
+function checkAnswer(){
+    if(state.isGameOver)return;
+    const inp=document.getElementById('answer-input');
+    const userVal=parseFloat(inp.value.trim());
+    if(isNaN(userVal))return;
+    const qData=state.questions[state.currentIndex];
+    qData.timeTaken=(Date.now()-state.questionStartTime)/1000;
+    qData.userAns=userVal;
+    qData.isCorrect=(userVal===qData.a);
+    if(qData.isCorrect){ state.correct++; document.getElementById('score-correct').textContent=state.correct; flashScreen(true); }
+    else{ state.wrong++; document.getElementById('score-wrong').textContent=state.wrong; flashScreen(false,qData.a); }
+    inp.blur();
+    setTimeout(()=>{ state.currentIndex++; if(state.currentIndex>=state.totalQuestions)endQuiz(); else loadQuestion(); },620);
+}
+
+function flashScreen(isCorrect,rightAns=''){
+    const ov=document.getElementById('flash-overlay');
+    ov.style.backgroundColor=isCorrect?'rgba(16,217,126,0.85)':'rgba(255,77,106,0.85)';
+    document.getElementById('flash-icon').textContent=isCorrect?'✅':'❌';
+    document.getElementById('flash-correct-ans').textContent=isCorrect?'':`= ${rightAns}`;
+    ov.style.opacity='1';
+    setTimeout(()=>ov.style.opacity='0',540);
+}
+
+/* ════════════════════════════════
+   8. RESULTS
+════════════════════════════════ */
+function endQuiz(forceEarly=false){
+    state.isGameOver=true;
+    clearInterval(state.timerInterval);
+    const answered=state.correct+state.wrong;
+    const skipped=state.totalQuestions-answered;
+    const totalSecs=Math.floor((Date.now()-state.startTime)/1000);
+    const acc=answered>0?Math.round((state.correct/answered)*100):0;
+    const session={date:Date.now(),mode:state.mode,cats:[...state.selectedCategories],
+        totalQ:state.totalQuestions,correct:state.correct,wrong:state.wrong,
+        acc,timeSecs:totalSecs,qData:state.questions.filter(q=>q.userAns!==null)};
+    state.history.unshift(session);
+    if(state.history.length>50)state.history.length=50;
+    localStorage.setItem('speedMathsHistory',JSON.stringify(state.history));
+
+    document.getElementById('res-correct').textContent=state.correct;
+    document.getElementById('res-wrong').textContent=state.wrong;
+    document.getElementById('res-skipped').textContent=skipped;
+    document.getElementById('res-time').textContent=fmtTime(totalSecs);
+
+    const answeredQs=state.questions.filter(q=>q.userAns!==null);
+    if(answeredQs.length>0){
+        const avg=answeredQs.reduce((s,q)=>s+q.timeTaken,0)/answeredQs.length;
+        const fast=Math.min(...answeredQs.map(q=>q.timeTaken));
+        document.getElementById('res-avg-time').textContent=avg.toFixed(1)+'s';
+        document.getElementById('res-fastest').textContent=fast.toFixed(1)+'s';
+    }else{ document.getElementById('res-avg-time').textContent='--'; document.getElementById('res-fastest').textContent='--'; }
+
+    const gradeEl=document.getElementById('res-grade');
+    const msgEl=document.getElementById('res-msg');
+    const hero=document.getElementById('results-hero');
+    gradeEl.textContent=acc+'%';
+    hero.className='results-hero';
+    if(acc>=90){msgEl.textContent='🏆 EXCELLENT!';gradeEl.style.color='var(--correct)';hero.classList.add('grade-excellent');}
+    else if(acc>=75){msgEl.textContent='👍 GOOD';gradeEl.style.color='var(--blue)';hero.classList.add('grade-good');}
+    else if(acc>=50){msgEl.textContent='📈 AVERAGE';gradeEl.style.color='var(--gold)';hero.classList.add('grade-average');}
+    else{msgEl.textContent='💪 KEEP PRACTISING';gradeEl.style.color='var(--wrong)';hero.classList.add('grade-needswork');}
+
+    renderCategoryBreakdown(answeredQs);
+    renderWrongAnswers(answeredQs);
+    showScreen('screen-results');
+}
+
+function renderCategoryBreakdown(qs){
+    const table=document.getElementById('res-cat-table');
+    table.innerHTML='<tr><th>Category</th><th>Accuracy</th><th>Avg Time</th></tr>';
+    const stats={};
+    state.selectedCategories.forEach(cid=>{stats[cid]={t:0,c:0,time:0};});
+    qs.forEach(q=>{ if(!stats[q.cat])return; stats[q.cat].t++; stats[q.cat].time+=q.timeTaken; if(q.isCorrect)stats[q.cat].c++; });
+    const sorted=Object.keys(stats).filter(k=>stats[k].t>0)
+        .map(k=>({id:k,name:categories.find(c=>c.id===k).name,color:categories.find(c=>c.id===k).color,
+            acc:Math.round((stats[k].c/stats[k].t)*100),avgT:(stats[k].time/stats[k].t).toFixed(1)}))
+        .sort((a,b)=>a.acc-b.acc);
+    sorted.forEach(s=>{
+        const fc=s.acc>=75?'var(--correct)':(s.acc>=50?'var(--gold)':'var(--wrong)');
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td style="color:${s.color};font-weight:700;">${s.name}</td>
+            <td><div class="acc-bar-cell">
+                <span style="color:${fc};font-weight:700;font-family:'Courier New',monospace;min-width:36px;">${s.acc}%</span>
+                <div class="acc-mini-bar"><div class="acc-mini-fill" style="width:${s.acc}%;background:${fc};"></div></div>
+            </div></td>
+            <td style="color:var(--muted);font-family:'Courier New',monospace;">${s.avgT}s</td>`;
+        table.appendChild(tr);
+    });
+    const weakCats=sorted.filter(s=>s.acc<60).map(s=>s.id);
+    const weakBtn=document.getElementById('btn-practice-weak');
+    weakBtn.style.display=weakCats.length>0?'block':'none';
+    if(weakCats.length>0) weakBtn.onclick=()=>{ state.mode='Category'; state.selectedCategories=weakCats; setupSetupScreen(); };
+}
+
+function renderWrongAnswers(qs){
+    const list=document.getElementById('wrong-answers-list');
+    const wrongQs=qs.filter(q=>!q.isCorrect);
+    if(wrongQs.length===0){
+        list.innerHTML='<p style="color:var(--correct);text-align:center;padding:12px 0;font-weight:600;">🎉 Perfect! Zero wrong answers!</p>';
+        return;
+    }
+    list.innerHTML='';
+    wrongQs.forEach(q=>{
+        const sol=buildSolution(q);
+        const div=document.createElement('div');
+        div.className='wrong-card';
+        div.innerHTML=`
+            <div class="wrong-card-top">
+                <div class="wrong-question">${q.q}</div>
+                <div class="ans-time">${q.timeTaken.toFixed(1)}s</div>
+            </div>
+            <div class="wrong-answers-row">
+                <div class="ans-chip user">✗ You: ${q.userAns}</div>
+                <div class="ans-chip correct">✓ Correct: ${q.a}</div>
+            </div>
+            ${sol?`<div class="solution-box"><div class="sol-title">💡 Easy Method</div><div class="solution-steps">${sol}</div></div>`:''}`;
+        list.appendChild(div);
+    });
+}
+
+function copyResults(){
+    const acc=document.getElementById('res-grade').textContent;
+    const time=document.getElementById('res-time').textContent;
+    const txt=`Speed Maths Pro: ${state.correct}/${state.totalQuestions} (${acc}) | Mode: ${state.mode} | Time: ${time}`;
+    navigator.clipboard.writeText(txt).then(()=>showToast('✅ Copied!')).catch(()=>showToast('Could not copy'));
+}
+
+/* ════════════════════════════════
+   9. HISTORY
+════════════════════════════════ */
+function renderHistory(){
+    const hList=document.getElementById('history-list');
+    const bTable=document.getElementById('best-scores-table');
+    const chart=document.getElementById('history-chart');
+    if(state.history.length===0){
+        hList.innerHTML='<p style="color:var(--muted);text-align:center;padding:16px 0;">No history yet. Play a quiz first!</p>';
+        chart.innerHTML=''; bTable.innerHTML='<tr><th>Category</th><th>Fastest</th></tr>'; return;
+    }
+    hList.innerHTML='';
+    state.history.slice(0,10).forEach(h=>{
+        const d=new Date(h.date);
+        const div=document.createElement('div');
+        div.className='card history-card';
+        const ac=h.acc>=75?'var(--correct)':(h.acc>=50?'var(--gold)':'var(--wrong)');
+        div.innerHTML=`<div class="flex-between">
+            <strong style="font-size:0.9rem;">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</strong>
+            <span style="font-family:'Courier New',monospace;font-weight:700;color:${ac};">${h.acc}%</span></div>
+            <div style="color:var(--muted);font-size:0.8rem;margin-top:4px;">${h.mode} · ${fmtTime(h.timeSecs)} · ${h.correct}/${h.totalQ} correct</div>`;
+        hList.appendChild(div);
+    });
+    const now=Date.now();
+    const wD=Array(7).fill(0),wC=Array(7).fill(0);
+    state.history.forEach(h=>{ const d=Math.floor((now-h.date)/86400000); if(d<7){wD[6-d]+=h.acc;wC[6-d]++;} });
+    chart.innerHTML='';
+    for(let i=0;i<7;i++){
+        const avg=wC[i]>0?wD[i]/wC[i]:0;
+        const d=new Date(now-(6-i)*86400000);
+        const w=document.createElement('div');
+        w.className='bar-wrapper';
+        w.innerHTML=`<div class="bar-pct">${avg>0?Math.round(avg)+'%':''}</div>
+            <div class="bar" style="height:${Math.max(avg*0.78,avg>0?4:0)}px;opacity:${avg>0?1:0.18};"></div>
+            <div class="bar-label">${d.toLocaleDateString('en-US',{weekday:'short'}).slice(0,2)}</div>`;
+        chart.appendChild(w);
+    }
+    const bests={};
+    categories.forEach(c=>bests[c.id]=999);
+    state.history.forEach(h=>{ if(h.qData)h.qData.forEach(q=>{ if(q.isCorrect&&q.timeTaken<bests[q.cat])bests[q.cat]=q.timeTaken; }); });
+    bTable.innerHTML='<tr><th>Category</th><th>Fastest</th></tr>';
+    categories.forEach(c=>{ if(bests[c.id]<999){ const tr=document.createElement('tr');
+        tr.innerHTML=`<td style="color:${c.color};font-weight:700;">${c.name}</td>
+            <td style="font-family:'Courier New',monospace;color:var(--gold);font-weight:700;">${bests[c.id].toFixed(1)}s</td>`;
+        bTable.appendChild(tr); } });
+}
+
+function clearHistory(){
+    if(confirm('Delete all saved progress? This cannot be undone.')){
+        state.history=[]; localStorage.removeItem('speedMathsHistory');
+        renderHistory(); showToast('🗑 History cleared');
+    }
+}
+
+/* Init */
+updateOnlineStatus();
+renderSettingsUI();
+</script>
+</body>
+</html>
